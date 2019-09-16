@@ -11,6 +11,8 @@
 #define new DEBUG_NEW
 #endif
 
+COLORREF cBgColor = RGB(255, 255, 255);
+
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
@@ -81,6 +83,8 @@ BEGIN_MESSAGE_MAP(CWinMFCDialogBasedDlg, CDialogEx)
 	//	ON_WM_HSCROLL()
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
+	ON_BN_CLICKED(IDC_BUTTON7, &CWinMFCDialogBasedDlg::OnBnClickedButton7)
+	ON_BN_CLICKED(IDC_BUTTON8, &CWinMFCDialogBasedDlg::OnBnClickedButton8)
 END_MESSAGE_MAP()
 
 
@@ -115,7 +119,18 @@ BOOL CWinMFCDialogBasedDlg::OnInitDialog() {
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	SetDlgItemText(IDC_STATIC, "hihi");
 
-	hVScrollBar.SetScrollRange(0, 100);
+	//스크롤바 최소,최대값 지정
+	//hVScrollBar.SetScrollRange(0, 100);
+	//스크롤바 정보 한번에 설정
+	SCROLLINFO sScrollInfo;
+	sScrollInfo.cbSize = sizeof(sScrollInfo);
+	sScrollInfo.fMask = SIF_ALL;
+	sScrollInfo.nMin = 0;
+	sScrollInfo.nMax = 100;
+	sScrollInfo.nPage = 10;
+	sScrollInfo.nTrackPos = 0;
+	sScrollInfo.nPos = 50;
+	hVScrollBar.SetScrollInfo(&sScrollInfo);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -129,11 +144,6 @@ void CWinMFCDialogBasedDlg::OnSysCommand(UINT nID, LPARAM lParam) {
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
-
-// 대화 상자에 최소화 단추를 추가할 경우 아이콘을 그리려면
-//  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 응용 프로그램의 경우에는
-//  프레임워크에서 이 작업을 자동으로 수행합니다.
-
 void CWinMFCDialogBasedDlg::OnPaint() {
 	if (IsIconic()) {
 		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
@@ -152,6 +162,11 @@ void CWinMFCDialogBasedDlg::OnPaint() {
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else {
+		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
+		CRect rect;
+		GetClientRect(&rect);
+		dc.FillSolidRect(rect, cBgColor);
+
 		CDialogEx::OnPaint();
 	}
 }
@@ -161,9 +176,6 @@ void CWinMFCDialogBasedDlg::OnPaint() {
 HCURSOR CWinMFCDialogBasedDlg::OnQueryDragIcon() {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
-
-
 void CWinMFCDialogBasedDlg::OnBnClickedButton1() {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData(true);//컨트롤의 값을 변수로 전송
@@ -173,23 +185,17 @@ void CWinMFCDialogBasedDlg::OnBnClickedButton1() {
 	//MessageBox(szEdit, "hihi");
 	//UpdateData(false);
 }
-
-
 void CWinMFCDialogBasedDlg::OnBnClickedSetCheck() {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	hCheck1.SetCheck(BST_CHECKED);
 	//hCheck1.SetCheck(BST_UNCHECKED);
 }
-
-
 void CWinMFCDialogBasedDlg::OnBnClickedGetCheck() {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	if (hCheck1.GetCheck() == BST_CHECKED) {
 		MessageBox("hi", "");
 	}
 }
-
-
 void CWinMFCDialogBasedDlg::OnBnClickedRadio() {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData(true);
@@ -197,36 +203,17 @@ void CWinMFCDialogBasedDlg::OnBnClickedRadio() {
 	//sprintf_s(sz, );
 	TRACE("%d\n", iSelectedRadio);
 }
-
-
 void CWinMFCDialogBasedDlg::OnLbnSelchangeList1() {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
-
-
 void CWinMFCDialogBasedDlg::OnBnClickedButton5() {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	hList.AddString("hi");
 }
-
-
 void CWinMFCDialogBasedDlg::OnBnClickedButton6() {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	hList.DeleteString(hList.GetCurSel());
 }
-
-
-
-
 void CWinMFCDialogBasedDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
-
-
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
-
-
 void CWinMFCDialogBasedDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	if (pScrollBar == &hVScrollBar) {
@@ -263,7 +250,32 @@ void CWinMFCDialogBasedDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScro
 			break;
 		}
 		hVScrollBar.SetScrollPos(sScrollInfo.nPos);
-		//hVScrollBar.SetScrollPos(nPos + 1);
 	}
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
+}
+void CWinMFCDialogBasedDlg::OnBnClickedButton7() {
+	CColorDialog cColorDialog;
+	if (cColorDialog.DoModal() == IDOK) {
+		cBgColor = cColorDialog.GetColor();
+		CString str;
+		str.Format("%u", cBgColor);
+		Invalidate();
+		//AfxMessageBox(str);
+	}
+}
+
+void CWinMFCDialogBasedDlg::OnBnClickedButton8() {
+	CFileDialog cFileDialog(true/*true:open, false:save*/, nullptr,  nullptr, OFN_HIDEREADONLY, "filetype1|*.*|filetype2|*.exe|");
+	if (cFileDialog.DoModal() == IDOK) {
+		CString str;
+		str.Format("%s, %s, %s, %s\n", cFileDialog.GetFileName(), cFileDialog.GetFileTitle(), cFileDialog.GetFileExt(), cFileDialog.GetFolderPath());
+		TRACE(str);
+
+		CStdioFile cStdioFile;
+		if (cStdioFile.Open(cFileDialog.GetPathName(), CFile::modeRead | CFile::typeText)) {
+			cStdioFile.ReadString(str);
+			TRACE("%s\n", str);
+			cStdioFile.Close();
+		}
+	}
 }

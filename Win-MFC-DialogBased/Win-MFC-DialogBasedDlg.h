@@ -50,4 +50,6 @@ public:
 	CScrollBar hVScrollBar;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnBnClickedButton7();
+	afx_msg void OnBnClickedButton8();
 };
