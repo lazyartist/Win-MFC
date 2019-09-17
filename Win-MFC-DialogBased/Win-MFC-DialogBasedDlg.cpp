@@ -67,6 +67,9 @@ void CWinMFCDialogBasedDlg::DoDataExchange(CDataExchange* pDX) {
 	DDX_Radio(pDX, IDC_RADIO1, iSelectedRadio);
 	DDX_Control(pDX, IDC_LIST1, hList);
 	DDX_Control(pDX, IDC_SCROLLBAR5, hVScrollBar);
+	DDX_Control(pDX, IDC_PROGRESS1, pcProgress);
+	DDX_Control(pDX, IDC_LIST2, cListCtrl);
+	DDX_Control(pDX, IDC_TREE1, cTreeCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CWinMFCDialogBasedDlg, CDialogEx)
@@ -85,6 +88,9 @@ BEGIN_MESSAGE_MAP(CWinMFCDialogBasedDlg, CDialogEx)
 	ON_WM_VSCROLL()
 	ON_BN_CLICKED(IDC_BUTTON7, &CWinMFCDialogBasedDlg::OnBnClickedButton7)
 	ON_BN_CLICKED(IDC_BUTTON8, &CWinMFCDialogBasedDlg::OnBnClickedButton8)
+	ON_BN_CLICKED(IDC_BUTTON10, &CWinMFCDialogBasedDlg::OnBnClickedButton10)
+	ON_BN_CLICKED(IDC_BUTTON11, &CWinMFCDialogBasedDlg::OnBnClickedButton11)
+	ON_BN_CLICKED(IDC_BUTTON12, &CWinMFCDialogBasedDlg::OnBnClickedButton12)
 END_MESSAGE_MAP()
 
 
@@ -131,6 +137,20 @@ BOOL CWinMFCDialogBasedDlg::OnInitDialog() {
 	sScrollInfo.nTrackPos = 0;
 	sScrollInfo.nPos = 50;
 	hVScrollBar.SetScrollInfo(&sScrollInfo);
+
+	//ListCtrl
+	cListCtrl.SetExtendedStyle(
+		LVS_EX_FULLROWSELECT // 아이템 전체가 클릭되도록 한다.
+		| LVS_EX_GRIDLINES // 서브아이템 사이에 그리드 라인을 넣는다.
+	);
+	cListCtrl.InsertColumn(0, "Column1", 0, 200);
+	cListCtrl.InsertColumn(1, "Column2", 0, 200);
+
+	//TreeCtrl
+	HTREEITEM root = cTreeCtrl.InsertItem("root");
+	HTREEITEM sub = cTreeCtrl.InsertItem("sub", root);
+	cTreeCtrl.InsertItem("sub2", root);
+	cTreeCtrl.InsertItem("subsub", sub);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -278,4 +298,78 @@ void CWinMFCDialogBasedDlg::OnBnClickedButton8() {
 			cStdioFile.Close();
 		}
 	}
+}
+
+
+void CWinMFCDialogBasedDlg::OnBnClickedButton10() {
+	CFontDialog cFontDialog;
+	if (cFontDialog.DoModal() == IDOK) {
+		CDC *dc1 = CWnd::GetDC();
+		CDC *dc2 = this->GetDC();
+		CDC *dc3 = GetDC();
+
+		CClientDC dc(this);
+
+		CFont cFont, *pcOldFont;
+
+		//Logical Font
+		//cFont.CreateFontIndirectA에 전달하면 이 값과 가장 비슷한 Physicial Font를 
+		//Font Mapper이 찾아서 dc에 등록해준다.
+		LOGFONT sLOGFONT;
+
+		//방법1. LOGFONT 구조체를 사용, 좀 더 간단
+		cFontDialog.GetCurrentFont(&sLOGFONT);
+		cFont.CreateFontIndirectA(&sLOGFONT);
+
+		////방법2. 인자로 전달, 복잡하다
+		cFont.CreateFont(
+			12,                       // nHeight
+			0,                        // nWidth
+			0,                        // nEscapement
+			0,                        // nOrientation
+			FW_NORMAL,                // nWeight
+			FALSE,                    // bItalic
+			FALSE,                    // bUnderline
+			0,                        // cStrikeOut
+			ANSI_CHARSET,             // nCharSet
+			OUT_DEFAULT_PRECIS,       // nOutPrecision
+			CLIP_DEFAULT_PRECIS,      // nClipPrecision
+			DEFAULT_QUALITY,          // nQuality
+			DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
+			cFontDialog.GetFaceName());            // lpszFacename
+
+		//방법3. 간단한 설정
+		cFont.CreatePointFont(120, "");
+
+		//폰트 적용
+		pcOldFont = dc.SelectObject(&cFont);
+		dc.TextOutA(0, 0, "hihi");
+
+		//이전 폰트로 돌림
+		dc.SelectObject(pcOldFont);
+		cFont.DeleteObject();
+
+		//이전 설정으로 그려진다.
+		dc.TextOutA(200, 0, "hoho");
+	}
+}
+
+
+void CWinMFCDialogBasedDlg::OnBnClickedButton11() {
+	pcProgress.SetPos(100);
+}
+
+
+void CWinMFCDialogBasedDlg::OnBnClickedButton12() {
+	LVITEMA item = {};
+	if (cListCtrl.GetItemCount() == 0) {
+		item.pszText = "0";
+	}
+	else {
+		item.pszText = "9";
+	}
+	item.mask = LVIF_TEXT;
+	item.iItem = 1;//아이템이 삽입될 위치
+	cListCtrl.InsertItem(&item);
+	cListCtrl.SetItemText(1, 1, "hi");
 }

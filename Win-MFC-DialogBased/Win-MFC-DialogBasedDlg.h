@@ -52,4 +52,10 @@ public:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnBnClickedButton7();
 	afx_msg void OnBnClickedButton8();
+	afx_msg void OnBnClickedButton10();
+	CProgressCtrl pcProgress;
+	afx_msg void OnBnClickedButton11();
+	CListCtrl cListCtrl;
+	afx_msg void OnBnClickedButton12();
+	CTreeCtrl cTreeCtrl;
 };
